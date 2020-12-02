@@ -110,3 +110,53 @@ func TestRemoveFirst(t *testing.T) {
 		}
 	}
 }
+
+var reverseTest = []struct {
+	name    string
+	l       List
+	outList string
+	outLen  int
+}{
+	{
+		name:    "list has several nodes",
+		l:       func() List { setupList(); return list }(),
+		outList: "[ccc bbb aaa 3 2 1]",
+		outLen:  6,
+	},
+	{
+		name:    "list has a node",
+		l:       List{head: &Node{data: 1}, len: 1},
+		outList: "[1]",
+		outLen:  1,
+	},
+	{
+		name:    "empty list",
+		l:       List{},
+		outList: "[]",
+		outLen:  0,
+	},
+}
+
+func TestReverseIterative(t *testing.T) {
+	for _, tt := range reverseTest {
+		tt.l.ReverseIterative()
+		if actual := tt.l.ToString(); actual != tt.outList {
+			t.Errorf("%s[list]: got %s, want %s", tt.name, actual, tt.outList)
+		}
+		if tt.l.len != tt.outLen {
+			t.Errorf("%s[len]: got %d, want %d", tt.name, tt.l.len, tt.outLen)
+		}
+	}
+}
+
+func TestReverseRecursive(t *testing.T) {
+	for _, tt := range reverseTest {
+		tt.l.ReverseRecursive()
+		if actual := tt.l.ToString(); actual != tt.outList {
+			t.Errorf("%s[list]: got %s, want %s", tt.name, actual, tt.outList)
+		}
+		if tt.l.len != tt.outLen {
+			t.Errorf("%s[len]: got %d, want %d", tt.name, tt.l.len, tt.outLen)
+		}
+	}
+}

@@ -1,6 +1,9 @@
 package list
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 // List represents a single linked list.
 // The zero value for List is an empty list ready to use.
@@ -78,6 +81,53 @@ func (l *List) RemoveFirst(d interface{}) {
 	}
 }
 
+// ReverseIterative reverses the order of the elements in the list
+func (l *List) ReverseIterative() {
+	if l.len <= 1 {
+		return
+	}
+
+	prev := l.head
+	current := prev.next
+	// headのnextをnilにする
+	prev.next = nil
+	for current != nil {
+		// 次のnodeをnextに退避する
+		next := current.next
+		// currentの向き先を逆にする
+		current.next = prev
+
+		// 次のnodeの処理に移る
+		prev = current
+		current = next
+	}
+	l.head = prev
+}
+
+// ReverseRecursive is same as ReverseIterative
+func (l *List) ReverseRecursive() {
+	if l.len <= 1 {
+		return
+	}
+
+	prev := l.head
+	current := prev.next
+	prev.next = nil
+
+	var recF func(prev *Node, current *Node) *Node
+	recF = func(prev *Node, current *Node) *Node {
+		if current == nil {
+			return prev
+		}
+
+		next := current.next
+		current.next = prev
+		return recF(current, next)
+	}
+
+	l.head = recF(prev, current)
+}
+
 // Print prints every list node.
 func (l List) Print() {
 	s := l.listToSlice()
@@ -93,9 +143,14 @@ func (l List) ToString() string {
 func (l List) listToSlice() []interface{} {
 	s := make([]interface{}, 0, l.len)
 	current := l.head
+	count := 0
 	for current != nil {
 		s = append(s, current.data)
 		current = current.next
+		count++
+		if count > l.len {
+			log.Fatalf("list size over error :%v\n", s)
+		}
 	}
 	return s
 }
