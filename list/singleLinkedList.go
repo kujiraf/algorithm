@@ -128,6 +128,59 @@ func (l *List) ReverseRecursive() {
 	l.head = recF(prev, current)
 }
 
+// ReverseEven sorts consecutive even numbers in reverse order.
+func (l *List) ReverseEven() {
+	if l.len <= 1 {
+		return
+	}
+
+	var isEven func(arg interface{}) bool
+	isEven = func(arg interface{}) bool {
+		n, ok := arg.(int)
+		if !ok {
+			return false
+		}
+		if n%2 != 0 {
+			return false
+		}
+		return true
+	}
+
+	var recRev func(head *Node, prev *Node) *Node
+	recRev = func(head *Node, prev *Node) *Node {
+		if head == nil {
+			return nil
+		}
+
+		current := head
+		// ここの条件が理解できない。なぜcurrentがevenというだけで逆にするの？（current != headの場合を見ればわかる）
+		for current != nil && isEven(current.data) {
+			next := current.next
+			current.next = prev
+			prev = current
+			current = next
+		}
+
+		// current != headの場合(=headが偶数だった場合)、currentはoddまたはnilになっていて、head.nextをここに向ける
+		// ここの処理があることで、奇数に挟まれた偶数の向きを変えても矯正される
+		// 例: input[head/current:even -> odd]
+		// 上記のforループにて[<-head:even current:odd]となり
+		// head.next = currentにて[head:even -> current:odd]となる
+		// forループの最初に逆向きにしたheadのnextを、ここで最終的に戻しているということ。
+		if current != head {
+			head.next = current
+			current = recRev(current, nil)
+			return prev
+		}
+		// current == headの場合(=headが奇数だった場合)、一つノードをシフトして再帰的に呼び出し
+		head.next = recRev(head.next, head)
+
+		return head
+	}
+
+	l.head = recRev(l.head, nil)
+}
+
 // Print prints every list node.
 func (l List) Print() {
 	s := l.listToSlice()
