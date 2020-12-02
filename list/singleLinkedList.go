@@ -16,17 +16,17 @@ type Node struct {
 }
 
 // Append adds a node to the end of list.
-func (l *List) Append(n *Node) {
+func (l *List) Append(d interface{}) {
 	if l.head == nil {
-		l.head = n
+		l.head = &Node{data: d}
 		l.len++
 		return
 	}
 
 	current := l.head
-	for i := 0; i < l.len; i++ {
+	for current != nil {
 		if current.next == nil {
-			current.next = n
+			current.next = &Node{data: d}
 			l.len++
 			return
 		}
@@ -35,17 +35,47 @@ func (l *List) Append(n *Node) {
 }
 
 // Prepend adds new node to the top of the list.
-func (l *List) Prepend(n *Node) {
+func (l *List) Prepend(d interface{}) {
 	if l.head == nil {
-		l.head = n
+		l.head = &Node{data: d}
 		l.len++
 		return
 	}
 
-	tmp := l.head
-	l.head = n
-	l.head.next = tmp
+	newHead := &Node{
+		data: d,
+		next: l.head,
+	}
+	l.head = newHead
 	l.len++
+}
+
+// RemoveFirst removes only the first data from the list if args data is found in it.
+func (l *List) RemoveFirst(d interface{}) {
+	if l.len == 0 {
+		return
+	}
+
+	// the case the head data is equal d
+	if l.head.data == d {
+		l.head = l.head.next
+		l.len--
+		return
+	}
+
+	prev := l.head
+	current := prev.next
+	for current != nil {
+		if current.data == d {
+			// headを持っているのがprevなので、prev.nextをcurrent.nextにする
+			// current = current.nextだと、currentはheadを持っていないので、リムーブできない。
+			prev.next = current.next
+			l.len--
+			return
+		}
+		prev = current
+		current = current.next
+	}
 }
 
 // Print prints every list node.
@@ -63,7 +93,7 @@ func (l List) ToString() string {
 func (l List) listToSlice() []interface{} {
 	s := make([]interface{}, 0, l.len)
 	current := l.head
-	for i := 0; i < l.len; i++ {
+	for current != nil {
 		s = append(s, current.data)
 		current = current.next
 	}
