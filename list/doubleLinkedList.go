@@ -40,6 +40,15 @@ func (l *Dlist) Append(d interface{}) {
 	}
 }
 
+func (l *Dlist) Prepend(d interface{}) {
+	node := &Dnode{data: d}
+
+	l.head.prev = node
+	node.next = l.head
+	l.head = node
+	l.len++
+}
+
 // Print prints every list node.
 func (l Dlist) Print() {
 	s := l.listToSlice()
