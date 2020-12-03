@@ -72,13 +72,11 @@ func (l *Dlist) Remove(d interface{}) {
 		return
 	}
 
-	var prev *Dnode
-	current := l.head
+	prev := l.head
+	current := prev.next
 	for current != nil {
 		if current.data == d {
-			if prev != nil {
-				prev.next = current.next
-			}
+			prev.next = current.next
 			if current.next != nil {
 				current.next.prev = prev
 			}
@@ -109,6 +107,44 @@ func (l Dlist) listToSlice() []interface{} {
 		}
 	}
 	return s
+}
+
+func (l *Dlist) ReverseIterative() {
+	if l.len <= 1 {
+		return
+	}
+
+	var prev *Dnode
+	current := l.head
+	for current != nil {
+		next := current.next
+		current.prev = current.next
+		current.next = prev
+
+		prev = current
+		current = next
+	}
+	l.head = prev
+}
+
+func (l *Dlist) ReverseRecursive() {
+	if l.len <= 1 {
+		return
+	}
+
+	var rec func(prev *Dnode, current *Dnode) *Dnode
+	rec = func(prev *Dnode, current *Dnode) *Dnode {
+		if current == nil {
+			return prev
+		}
+		next := current.next
+		current.prev = current.next
+		current.next = prev
+
+		return rec(current, next)
+	}
+
+	l.head = rec(nil, l.head)
 }
 
 func (l Dlist) ToStringReverse() string {

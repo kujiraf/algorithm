@@ -171,3 +171,63 @@ func TestRemove(t *testing.T) {
 		}
 	}
 }
+
+type revTable struct {
+	name    string
+	l       Dlist
+	outList string
+	outRev  string
+	outLen  int
+}
+
+var reverseTestD = []revTable{
+	{
+		name:    "an element",
+		l:       func() Dlist { setupDlistByAppend(1); return dList }(),
+		outList: "[1]",
+		outRev:  "[1]",
+		outLen:  1,
+	},
+	{
+		name:    "several elements",
+		l:       func() Dlist { setupDlistByAppend(1, 2, 3); return dList }(),
+		outList: "[3 2 1]",
+		outRev:  "[1 2 3]",
+		outLen:  3,
+	},
+	{
+		name:    "no element",
+		l:       func() Dlist { setupDlistByAppend(); return dList }(),
+		outList: "[]",
+		outRev:  "[]",
+		outLen:  0,
+	},
+}
+
+func TestReverse(t *testing.T) {
+
+	var test func(table []revTable, f func(tt revTable), execName string)
+	test = func(table []revTable, f func(tt revTable), execName string) {
+		for _, tt := range table {
+			f(tt) // ここだけ差し替えたい
+			if actual := tt.l.ToString(); actual != tt.outList {
+				t.Errorf("%s(%s): got %s, want %s", tt.name, execName, actual, tt.outList)
+			}
+			if rev := tt.l.ToStringReverse(); rev != tt.outRev {
+				t.Errorf("%s(%s): got %s, want %s", tt.name, execName, rev, tt.outRev)
+			}
+			if tt.l.len != tt.outLen {
+				t.Errorf("%s(%s): got %d, want %d", tt.name, execName, tt.l.len, tt.outLen)
+			}
+		}
+	}
+
+	// 次のテストでも同じスライスを使うため、shallow copyする
+	copied := make([]revTable, 0, len(reverseTestD))
+	copy(copied, reverseTestD)
+	test(copied, func(tt revTable) { tt.l.ReverseIterative() }, "iterative")
+
+	copied = make([]revTable, 0, len(reverseTestD))
+	copy(copied, reverseTestD)
+	test(copied, func(tt revTable) { tt.l.ReverseRecursive() }, "recursive")
+}

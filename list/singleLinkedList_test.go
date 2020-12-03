@@ -118,12 +118,14 @@ func TestRemoveFirst(t *testing.T) {
 	}
 }
 
-var reverseTest = []struct {
+type table struct {
 	name    string
 	l       Slist
 	outList string
 	outLen  int
-}{
+}
+
+var reverseTest = []table{
 	{
 		name:    "list has several nodes",
 		l:       func() Slist { setupList(); return sList }(),
@@ -145,27 +147,26 @@ var reverseTest = []struct {
 }
 
 func TestReverseIterative(t *testing.T) {
-	for _, tt := range reverseTest {
-		tt.l.ReverseIterative()
-		if actual := tt.l.ToString(); actual != tt.outList {
-			t.Errorf("%s[list]: got %s, want %s", tt.name, actual, tt.outList)
-		}
-		if tt.l.len != tt.outLen {
-			t.Errorf("%s[len]: got %d, want %d", tt.name, tt.l.len, tt.outLen)
+	var test func(tables []table, f func(t table), funcName string)
+	test = func(tables []table, f func(t table), funcName string) {
+		for _, tt := range tables {
+			f(tt)
+			if actual := tt.l.ToString(); actual != tt.outList {
+				t.Errorf("%s(%s): got %s, want %s", tt.name, funcName, actual, tt.outList)
+			}
+			if tt.l.len != tt.outLen {
+				t.Errorf("%s(%s): got %d, want %d", tt.name, funcName, tt.l.len, tt.outLen)
+			}
 		}
 	}
-}
 
-func TestReverseRecursive(t *testing.T) {
-	for _, tt := range reverseTest {
-		tt.l.ReverseRecursive()
-		if actual := tt.l.ToString(); actual != tt.outList {
-			t.Errorf("%s[list]: got %s, want %s", tt.name, actual, tt.outList)
-		}
-		if tt.l.len != tt.outLen {
-			t.Errorf("%s[len]: got %d, want %d", tt.name, tt.l.len, tt.outLen)
-		}
-	}
+	copied := make([]table, 0, len(reverseTest))
+	copy(copied, reverseTest)
+	test(copied, func(t table) { t.l.ReverseIterative() }, "iterative")
+
+	copied = make([]table, 0, len(reverseTest))
+	copy(copied, reverseTest)
+	test(copied, func(t table) { t.l.ReverseRecursive() }, "recursve")
 }
 
 var reverseEvenTest = []struct {
