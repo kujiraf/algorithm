@@ -5,23 +5,23 @@ import (
 	"log"
 )
 
-// List represents a single linked list.
-// The zero value for List is an empty list ready to use.
-type List struct {
-	head *Node
+// Slist represents a single linked list.
+// The zero value for Slist is an empty list ready to use.
+type Slist struct {
+	head *Snode
 	len  int
 }
 
-// Node is an node of a linked list.
-type Node struct {
+// Snode is an node of a linked list.
+type Snode struct {
 	data interface{}
-	next *Node
+	next *Snode
 }
 
 // Append adds a node to the end of list.
-func (l *List) Append(d interface{}) {
+func (l *Slist) Append(d interface{}) {
 	if l.head == nil {
-		l.head = &Node{data: d}
+		l.head = &Snode{data: d}
 		l.len++
 		return
 	}
@@ -29,7 +29,7 @@ func (l *List) Append(d interface{}) {
 	current := l.head
 	for current != nil {
 		if current.next == nil {
-			current.next = &Node{data: d}
+			current.next = &Snode{data: d}
 			l.len++
 			return
 		}
@@ -38,14 +38,14 @@ func (l *List) Append(d interface{}) {
 }
 
 // Prepend adds new node to the top of the list.
-func (l *List) Prepend(d interface{}) {
+func (l *Slist) Prepend(d interface{}) {
 	if l.head == nil {
-		l.head = &Node{data: d}
+		l.head = &Snode{data: d}
 		l.len++
 		return
 	}
 
-	newHead := &Node{
+	newHead := &Snode{
 		data: d,
 		next: l.head,
 	}
@@ -54,7 +54,7 @@ func (l *List) Prepend(d interface{}) {
 }
 
 // RemoveFirst removes only the first data from the list if args data is found in it.
-func (l *List) RemoveFirst(d interface{}) {
+func (l *Slist) RemoveFirst(d interface{}) {
 	if l.len == 0 {
 		return
 	}
@@ -82,7 +82,7 @@ func (l *List) RemoveFirst(d interface{}) {
 }
 
 // ReverseIterative reverses the order of the elements in the list
-func (l *List) ReverseIterative() {
+func (l *Slist) ReverseIterative() {
 	if l.len <= 1 {
 		return
 	}
@@ -105,7 +105,7 @@ func (l *List) ReverseIterative() {
 }
 
 // ReverseRecursive is same as ReverseIterative
-func (l *List) ReverseRecursive() {
+func (l *Slist) ReverseRecursive() {
 	if l.len <= 1 {
 		return
 	}
@@ -114,8 +114,8 @@ func (l *List) ReverseRecursive() {
 	current := prev.next
 	prev.next = nil
 
-	var recF func(prev *Node, current *Node) *Node
-	recF = func(prev *Node, current *Node) *Node {
+	var recF func(prev *Snode, current *Snode) *Snode
+	recF = func(prev *Snode, current *Snode) *Snode {
 		if current == nil {
 			return prev
 		}
@@ -129,7 +129,7 @@ func (l *List) ReverseRecursive() {
 }
 
 // ReverseEven sorts consecutive even numbers in reverse order.
-func (l *List) ReverseEven() {
+func (l *Slist) ReverseEven() {
 	if l.len <= 1 {
 		return
 	}
@@ -146,8 +146,8 @@ func (l *List) ReverseEven() {
 		return true
 	}
 
-	var recRev func(head *Node, prev *Node) *Node
-	recRev = func(head *Node, prev *Node) *Node {
+	var recRev func(head *Snode, prev *Snode) *Snode
+	recRev = func(head *Snode, prev *Snode) *Snode {
 		if head == nil {
 			return nil
 		}
@@ -162,19 +162,19 @@ func (l *List) ReverseEven() {
 		}
 
 		// current != headの場合(=headが偶数だった場合)、currentはoddまたはnilになっていて、head.nextをここに向ける
-		// ここの処理があることで、奇数に挟まれた偶数の向きを変えても矯正される
-		// 例: input[head/current:even -> odd]
-		// 上記のforループにて[<-head:even current:odd]となり
-		// head.next = currentにて[head:even -> current:odd]となる
-		// forループの最初に逆向きにしたheadのnextを、ここで最終的に戻しているということ。
 		if current != head {
+			// ここの処理があることで、奇数に挟まれた偶数の向きを変えても矯正される
+			// 例: input[head/current:even -> odd]
+			// 上記のforループにて[<-head:even current:odd]となり
+			// head.next = currentにて[head:even -> current:odd]となる
+			// forループの最初に逆向きにしたheadのnextを、ここで最終的に戻しているということ。
 			head.next = current
-			current = recRev(current, nil)
+			recRev(current, nil)
+			// current != headなので、headはprevに入っている
 			return prev
 		}
 		// current == headの場合(=headが奇数だった場合)、一つノードをシフトして再帰的に呼び出し
 		head.next = recRev(head.next, head)
-
 		return head
 	}
 
@@ -182,18 +182,18 @@ func (l *List) ReverseEven() {
 }
 
 // Print prints every list node.
-func (l List) Print() {
+func (l Slist) Print() {
 	s := l.listToSlice()
 	fmt.Printf("%v\n", s)
 }
 
 // ToString returns string of list.
-func (l List) ToString() string {
+func (l Slist) ToString() string {
 	s := l.listToSlice()
 	return fmt.Sprint(s)
 }
 
-func (l List) listToSlice() []interface{} {
+func (l Slist) listToSlice() []interface{} {
 	s := make([]interface{}, 0, l.len)
 	current := l.head
 	count := 0

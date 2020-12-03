@@ -4,102 +4,102 @@ import (
 	"testing"
 )
 
-var list = List{}
+var sList = Slist{}
 
 func setupEmptyList() {
-	list = List{}
+	sList = Slist{}
 }
 
 func setupList() {
 	setupEmptyList()
-	list.Append(1)
-	list.Append(2)
-	list.Append(3)
-	list.Append("aaa")
-	list.Append("bbb")
-	list.Append("ccc")
+	sList.Append(1)
+	sList.Append(2)
+	sList.Append(3)
+	sList.Append("aaa")
+	sList.Append("bbb")
+	sList.Append("ccc")
 }
 
 func setupIntList(nums ...int) {
 	setupEmptyList()
 	for _, v := range nums {
-		list.Append(v)
+		sList.Append(v)
 	}
 }
 
 func TestAppend(t *testing.T) {
 	setupList()
 	expected := "[1 2 3 aaa bbb ccc]"
-	if actual := list.ToString(); actual != expected {
+	if actual := sList.ToString(); actual != expected {
 		t.Errorf("list: got %s, want %s", actual, expected)
 	}
-	if len := list.len; len != 6 {
-		t.Errorf("len: got %d, want %d", list.len, 6)
+	if len := sList.len; len != 6 {
+		t.Errorf("len: got %d, want %d", sList.len, 6)
 	}
 }
 
 func TestPrepend(t *testing.T) {
 	setupEmptyList()
-	list.Prepend(1)
-	list.Append(2)
-	list.Append(3)
-	list.Prepend("aaa")
-	list.Append("bbb")
-	list.Prepend("ccc")
+	sList.Prepend(1)
+	sList.Append(2)
+	sList.Append(3)
+	sList.Prepend("aaa")
+	sList.Append("bbb")
+	sList.Prepend("ccc")
 	expected := "[ccc aaa 1 2 3 bbb]"
-	if actual := list.ToString(); actual != expected {
+	if actual := sList.ToString(); actual != expected {
 		t.Errorf("got %s, want %s", actual, expected)
 	}
-	if len := list.len; len != 6 {
-		t.Errorf("len: got %d, want %d", list.len, 6)
+	if len := sList.len; len != 6 {
+		t.Errorf("len: got %d, want %d", sList.len, 6)
 	}
 }
 
 var removeListTest = []struct {
 	name    string
-	l       List
+	l       Slist
 	arg     interface{}
 	outList string
 	outLen  int
 }{
 	{
 		name:    "empty list",
-		l:       List{},
+		l:       Slist{},
 		arg:     5,
 		outList: "[]",
 		outLen:  0,
 	},
 	{
 		name:    "not matched",
-		l:       func() List { setupList(); return list }(),
+		l:       func() Slist { setupList(); return sList }(),
 		arg:     5,
 		outList: "[1 2 3 aaa bbb ccc]",
 		outLen:  6,
 	},
 	{
 		name:    "head matched",
-		l:       func() List { setupList(); return list }(),
+		l:       func() Slist { setupList(); return sList }(),
 		arg:     1,
 		outList: "[2 3 aaa bbb ccc]",
 		outLen:  5,
 	},
 	{
 		name:    "around middle data matched",
-		l:       func() List { setupList(); return list }(),
+		l:       func() Slist { setupList(); return sList }(),
 		arg:     "aaa",
 		outList: "[1 2 3 bbb ccc]",
 		outLen:  5,
 	},
 	{
 		name:    "last data matched",
-		l:       func() List { setupList(); return list }(),
+		l:       func() Slist { setupList(); return sList }(),
 		arg:     "ccc",
 		outList: "[1 2 3 aaa bbb]",
 		outLen:  5,
 	},
 	{
 		name:    "single element list",
-		l:       List{head: &Node{data: "a"}, len: 1},
+		l:       Slist{head: &Snode{data: "a"}, len: 1},
 		arg:     "a",
 		outList: "[]",
 		outLen:  0,
@@ -120,25 +120,25 @@ func TestRemoveFirst(t *testing.T) {
 
 var reverseTest = []struct {
 	name    string
-	l       List
+	l       Slist
 	outList string
 	outLen  int
 }{
 	{
 		name:    "list has several nodes",
-		l:       func() List { setupList(); return list }(),
+		l:       func() Slist { setupList(); return sList }(),
 		outList: "[ccc bbb aaa 3 2 1]",
 		outLen:  6,
 	},
 	{
 		name:    "list has a node",
-		l:       List{head: &Node{data: 1}, len: 1},
+		l:       Slist{head: &Snode{data: 1}, len: 1},
 		outList: "[1]",
 		outLen:  1,
 	},
 	{
 		name:    "empty list",
-		l:       List{},
+		l:       Slist{},
 		outList: "[]",
 		outLen:  0,
 	},
@@ -170,25 +170,25 @@ func TestReverseRecursive(t *testing.T) {
 
 var reverseEvenTest = []struct {
 	name    string
-	l       List
+	l       Slist
 	outList string
 	outLen  int
 }{
 	{
 		name:    "only even",
-		l:       func() List { setupIntList(2, 4, 6, 8); return list }(),
+		l:       func() Slist { setupIntList(2, 4, 6, 8); return sList }(),
 		outList: "[8 6 4 2]",
 		outLen:  4,
 	},
 	{
 		name:    "an even between odds",
-		l:       func() List { setupIntList(1, 3, 2, 5); return list }(),
+		l:       func() Slist { setupIntList(1, 3, 2, 5); return sList }(),
 		outList: "[1 3 2 5]",
 		outLen:  4,
 	},
 	{
 		name:    "odds and evens",
-		l:       func() List { setupIntList(2, 4, 6, 8, 1, 5, 6, 7, 8, 2); return list }(),
+		l:       func() Slist { setupIntList(2, 4, 6, 8, 1, 5, 6, 7, 8, 2); return sList }(),
 		outList: "[8 6 4 2 1 5 6 7 2 8]",
 		outLen:  10,
 	},
