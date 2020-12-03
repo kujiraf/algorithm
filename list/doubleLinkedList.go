@@ -55,6 +55,41 @@ func (l Dlist) Print() {
 	fmt.Printf("%v\n", s)
 }
 
+func (l *Dlist) Remove(d interface{}) {
+	if l.len == 0 {
+		return
+	}
+
+	if l.head.data == d {
+		if l.len == 1 {
+			l.head = nil
+			l.len--
+			return
+		}
+		l.head = l.head.next
+		l.head.prev = nil
+		l.len--
+		return
+	}
+
+	var prev *Dnode
+	current := l.head
+	for current != nil {
+		if current.data == d {
+			if prev != nil {
+				prev.next = current.next
+			}
+			if current.next != nil {
+				current.next.prev = prev
+			}
+			l.len--
+			return
+		}
+		prev = current
+		current = current.next
+	}
+}
+
 // ToString returns string of list.
 func (l Dlist) ToString() string {
 	s := l.listToSlice()
@@ -70,8 +105,32 @@ func (l Dlist) listToSlice() []interface{} {
 		current = current.next
 		count++
 		if count > l.len {
-			log.Fatalf("list size over error :%v\n", s)
+			log.Fatalf("to string error: list size over error :%v\n", s)
 		}
 	}
 	return s
+}
+
+func (l Dlist) ToStringReverse() string {
+	current := l.head
+	var end *Dnode
+	count := 0
+	for current != nil {
+		end = current
+		current = current.next
+		count++
+		if count > l.len {
+			log.Fatalf("to string reverse error: list size over error. len=%d\n", l.len)
+		}
+	}
+
+	count = 0
+	current = end
+	s := make([]interface{}, 0, l.len)
+	for current != nil {
+		s = append(s, current.data)
+		current = current.prev
+	}
+
+	return fmt.Sprint(s)
 }
