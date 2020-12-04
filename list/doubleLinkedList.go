@@ -147,6 +147,33 @@ func (l *Dlist) ReverseRecursive() {
 	l.head = rec(nil, l.head)
 }
 
+func (l *Dlist) BubleSort() {
+	if l.len <= 1 {
+		return
+	}
+
+	var sort func(prev *Dnode, current *Dnode, index int)
+	sort = func(prev *Dnode, current *Dnode, index int) {
+		if current == nil || index < 1 {
+			return
+		}
+
+		if prev.data.(int) > current.data.(int) {
+			prev.data, current.data = current.data, prev.data
+		}
+
+		index--
+		sort(current, current.next, index)
+	}
+
+	i := l.len
+	for i < 2 {
+		index := i
+		sort(l.head, l.head.next, index-1)
+		i--
+	}
+}
+
 func (l Dlist) ToStringReverse() string {
 	current := l.head
 	var end *Dnode
