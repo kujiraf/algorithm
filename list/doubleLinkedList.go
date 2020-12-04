@@ -167,7 +167,7 @@ func (l *Dlist) BubleSort() {
 	}
 
 	i := l.len
-	for i < 2 {
+	for i > 1 {
 		index := i
 		sort(l.head, l.head.next, index-1)
 		i--
