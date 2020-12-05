@@ -8,6 +8,16 @@ import (
 func main() {
 	typeCheck()
 	recursiveAnonymousFunc()
+	hash("abc", 7)
+}
+
+func hash(str string, size int) {
+	sum := 0
+	for _, v := range str {
+		sum += int(v)
+	}
+
+	fmt.Printf("sum=%d, hash=%d\n", sum, sum%size)
 }
 
 func typeCheck() {
@@ -37,5 +47,5 @@ func recursiveAnonymousFunc() {
 		return anoF(append(x, str))
 	}
 
-	fmt.Print(anoF([]string{"x" + strconv.Itoa(count)}))
+	fmt.Println(anoF([]string{"x" + strconv.Itoa(count)}))
 }

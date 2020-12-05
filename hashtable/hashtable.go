@@ -1,10 +1,8 @@
 package hashtable
 
 import (
-	"encoding/hex"
 	"fmt"
 	"log"
-	"strconv"
 )
 
 const ArraySize = 7
@@ -24,22 +22,57 @@ type HashTable struct {
 	array [ArraySize]*bucket
 }
 
-// Insert
-func (m *HashTable) Insert(k string) {
+// New
+func New() *HashTable {
+	t := &HashTable{}
+	for i := range t.array {
+		t.array[i] = &bucket{}
+	}
+	return t
+}
 
+// Insert
+func (t *HashTable) Insert(k string) {
+	index := hash(k)
+	b := t.array[index]
+	if b.search(k) != nil {
+		b.insert(k)
+	}
 }
 
 // Search
 // Delete
 
-func getHashCode(s string) (int64, error) {
-	b := []byte(s)
-	str := hex.EncodeToString(b)
-	i, err := strconv.ParseInt(str, 16, 32)
-	if err != nil {
-		return 0, err
+func (t *HashTable) ToString() [][]string {
+	str := make([][]string, 0)
+	for i, b := range t.array {
+		cur := b.head
+		j := 0
+		for cur != nil {
+			str[i][j] = cur.key
+			j++
+		}
 	}
-	return i % 10, nil
+	return str
+}
+
+// func getHashCode(s string) (int64, error) {
+// 	b := []byte(s)
+// 	str := hex.EncodeToString(b)
+// 	i, err := strconv.ParseInt(str, 16, 32)
+// 	if err != nil {
+// 		return -1, err
+// 	}
+// 	return i % ArraySize, nil
+// }
+
+func hash(s string) int {
+	sum := 0
+	for _, v := range s {
+		sum += int(v)
+	}
+
+	return sum % ArraySize
 }
 
 // insert
@@ -47,10 +80,6 @@ func (b *bucket) insert(k string) {
 	if b.head == nil {
 		b.head = &node{key: k}
 		b.len++
-		return
-	}
-
-	if b.search(k) != nil {
 		return
 	}
 
