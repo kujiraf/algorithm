@@ -18,11 +18,12 @@ type node struct {
 	next *node
 }
 
+// HashTable has buckets with the indexes.
 type HashTable struct {
 	array [ArraySize]*bucket
 }
 
-// New
+// New create new HashTable instance.
 func New() *HashTable {
 	t := &HashTable{}
 	for i := range t.array {
@@ -31,7 +32,7 @@ func New() *HashTable {
 	return t
 }
 
-// Insert
+// Insert inserts new key. If the key is already exists, then this func does nothing.
 func (t *HashTable) Insert(k string) {
 	index := t.hash(k)
 	b := t.array[index]
@@ -40,20 +41,21 @@ func (t *HashTable) Insert(k string) {
 	}
 }
 
-// Search
+// Search searchs the node witch has the key. If it not found, return nil and false.
 func (t *HashTable) Search(k string) (*node, bool) {
 	index := t.hash(k)
 	b := t.array[index]
 	return b.search(k)
 }
 
-// Delete
+// Delete deletes the node witch has the key.
 func (t *HashTable) Delete(k string) {
 	index := t.hash(k)
 	b := t.array[index]
 	b.delete(k)
 }
 
+// ToString returns the 2d slice of string. It shows all HashTable elements.
 func (t *HashTable) ToString() [][]string {
 	str := make([][]string, ArraySize)
 	for i, b := range t.array {
