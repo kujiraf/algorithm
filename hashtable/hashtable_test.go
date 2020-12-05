@@ -135,7 +135,7 @@ func TestPriSearch(t *testing.T) {
 	}
 }
 
-func TestInsert(t *testing.T) {
+func setupTable() *HashTable {
 	table := New()
 	table.Insert("abc")
 	table.Insert("b")
@@ -146,58 +146,86 @@ func TestInsert(t *testing.T) {
 	table.Insert("d")
 	table.Insert("d")
 	table.Insert("eeeee")
+	return table
+}
+
+func TestInsert(t *testing.T) {
+	table := setupTable()
 	e := "[[b abc] [eeeee] [d] [] [] [aa] [d  a cccccc]]"
 	if a := table.ToString(); fmt.Sprint(a) != e {
 		t.Errorf("Insert assertion err: got %s, want %s", a, e)
 	}
 }
 
-// For Insert
-// var testdata1 = []table{
-// 	{
-// 		name:   "append once",
-// 		bucket: &bucket{},
-// 		f:      func(in *bucket) { in.insert("k") },
-// 		out:    "[k]",
-// 		outRev: "[k]",
-// 		len:    1,
-// 	},
-// 	{
-// 		name:   "append several data that has defferent key from each other",
-// 		bucket: &bucket{},
-// 		f: func(in *bucket) {
-// 			in.insert("k1")
-// 			in.insert("k2")
-// 			in.insert("k3")
-// 		},
-// 		out:    "[k1 k2 k3]",
-// 		outRev: "[k3 k2 k1]",
-// 		len:    3,
-// 	},
-// 	{
-// 		name:   "override all datas",
-// 		bucket: &bucket{},
-// 		f: func(in *bucket) {
-// 			in.insert("k")
-// 			in.insert("k")
-// 			in.insert("k")
-// 		},
-// 		out:    "[k]",
-// 		outRev: "[k]",
-// 		len:    1,
-// 	},
-// 	{
-// 		name:   "override not all datas",
-// 		bucket: &bucket{},
-// 		f: func(in *bucket) {
-// 			in.insert("k1")
-// 			in.insert("k2")
-// 			in.insert("k1")
-// 			in.insert("k3")
-// 			in.insert("k2")
-// 		},
-// 		out:    "[k1 k2 k3]",
-// 		outRev: "[k3 k2 k1]",
-// 		len:    3,
-// 	},
-// }
+func setupBucketWithKeys(keys ...string) *bucket {
+	b := &bucket{}
+	for _, v := range keys {
+		b.insert(v)
+	}
+	return b
+}
+
+var testPreDel = []testTable{
+	{
+		name:   "no element delete",
+		bucket: func() *bucket { return setupBucketWithKeys() }(),
+		in:     "k",
+		out:    "",
+		len:    0,
+	},
+	{
+		name:   "delete an element in bucket which has an element",
+		bucket: func() *bucket { return setupBucketWithKeys("k") }(),
+		in:     "k",
+		out:    "",
+		len:    0,
+	},
+	{
+		name:   "not matched",
+		bucket: func() *bucket { return setupBucketWithKeys("i", "j", "k") }(),
+		in:     "l",
+		out:    "[k j i]",
+		outRev: "[i j k]",
+		len:    3,
+	},
+	{
+		name:   "delete the top of bucket element",
+		bucket: func() *bucket { return setupBucketWithKeys("i", "j", "k") }(),
+		in:     "k",
+		out:    "[j i]",
+		outRev: "[i j]",
+		len:    2,
+	},
+	{
+		name:   "delete the middle of bucket element",
+		bucket: func() *bucket { return setupBucketWithKeys("i", "j", "k") }(),
+		in:     "j",
+		out:    "[k i]",
+		outRev: "[i k]",
+		len:    2,
+	},
+	{
+		name:   "delete the end of bucket element",
+		bucket: func() *bucket { return setupBucketWithKeys("i", "j", "k") }(),
+		in:     "i",
+		out:    "[k j]",
+		outRev: "[j k]",
+		len:    2,
+	},
+}
+
+func TestPriDelete(t *testing.T) {
+	for _, tt := range testPreDel {
+		b := tt.bucket
+		b.delete(tt.in)
+		if a := b.toString(); a != tt.out {
+			t.Errorf("%s: got %s, want %s", tt.name, a, tt.out)
+		}
+		if rev := b.toReverseString(); rev != tt.outRev {
+			t.Errorf("%s: got %s, want %s", tt.name, rev, tt.outRev)
+		}
+		if l := b.len; l != tt.len {
+			t.Errorf("%s: got %d, want %d", tt.name, l, tt.len)
+		}
+	}
+}

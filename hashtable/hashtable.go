@@ -112,6 +112,32 @@ func (b bucket) search(k string) (*node, bool) {
 }
 
 // delete
+func (b *bucket) delete(k string) {
+	n, exist := b.search(k)
+	if !exist {
+		return
+	}
+
+	next := n.next
+	if n == b.head {
+		b.head = next
+		if next != nil {
+			next.prev = nil
+		}
+		b.len--
+		return
+	}
+
+	prev := n.prev
+	if prev != nil {
+		prev.next = next
+	}
+	if next != nil {
+		next.prev = prev
+	}
+	b.len--
+	n = nil
+}
 
 func (b bucket) toString() string {
 	if b.len == 0 {
