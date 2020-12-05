@@ -229,3 +229,31 @@ func TestPriDelete(t *testing.T) {
 		}
 	}
 }
+
+func TestSearch(t *testing.T) {
+	b := setupTable()
+	n, exist := b.Search("eeeee")
+	if !exist {
+		t.Error("Search assertion error: result=false")
+	}
+	e := "eeeee"
+	if n.key != e {
+		t.Errorf("Search assertion error: got %s, want %s", n.key, e)
+	}
+	n, exist = b.Search("not mutched")
+	if exist || n != nil {
+		t.Error("Search assertion error: result=true or n is not nil")
+	}
+}
+
+func TestDelete(t *testing.T) {
+	b := setupTable()
+	b.Delete("eeeee")
+	b.Delete("k") // not mutched
+	b.Delete("abc")
+	b.Delete("aa")
+	e := "[[b] [] [d] [] [] [] [d  a cccccc]]"
+	if a := b.ToString(); fmt.Sprint(a) != e {
+		t.Errorf("Delete assertion error: got %s, want %s", a, e)
+	}
+}

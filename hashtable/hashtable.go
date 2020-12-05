@@ -41,7 +41,18 @@ func (t *HashTable) Insert(k string) {
 }
 
 // Search
+func (t *HashTable) Search(k string) (*node, bool) {
+	index := t.hash(k)
+	b := t.array[index]
+	return b.search(k)
+}
+
 // Delete
+func (t *HashTable) Delete(k string) {
+	index := t.hash(k)
+	b := t.array[index]
+	b.delete(k)
+}
 
 func (t *HashTable) ToString() [][]string {
 	str := make([][]string, ArraySize)
@@ -55,7 +66,6 @@ func (t *HashTable) ToString() [][]string {
 			j++
 		}
 	}
-	fmt.Print(str)
 	return str
 }
 
