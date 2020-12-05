@@ -232,16 +232,16 @@ func TestPriDelete(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	b := setupTable()
-	n, exist := b.Search("eeeee")
+	key, exist := b.Search("eeeee")
 	if !exist {
 		t.Error("Search assertion error: result=false")
 	}
 	e := "eeeee"
-	if n.key != e {
-		t.Errorf("Search assertion error: got %s, want %s", n.key, e)
+	if key != e {
+		t.Errorf("Search assertion error: got %s, want %s", key, e)
 	}
-	n, exist = b.Search("not mutched")
-	if exist || n != nil {
+	key, exist = b.Search("not mutched")
+	if exist || key != "" {
 		t.Error("Search assertion error: result=true or n is not nil")
 	}
 }

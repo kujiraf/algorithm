@@ -5,6 +5,7 @@ import (
 	"log"
 )
 
+// ArraySize is HashTable's array size.
 const ArraySize = 7
 
 type bucket struct {
@@ -41,11 +42,15 @@ func (t *HashTable) Insert(k string) {
 	}
 }
 
-// Search searchs the node witch has the key. If it not found, return nil and false.
-func (t *HashTable) Search(k string) (*node, bool) {
+// Search searchs the node witch has the key. If it not found, return empty str and false.
+func (t *HashTable) Search(k string) (string, bool) {
 	index := t.hash(k)
 	b := t.array[index]
-	return b.search(k)
+	n, exist := b.search(k)
+	if !exist {
+		return "", false
+	}
+	return n.key, true
 }
 
 // Delete deletes the node witch has the key.
