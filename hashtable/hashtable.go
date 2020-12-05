@@ -33,9 +33,9 @@ func New() *HashTable {
 
 // Insert
 func (t *HashTable) Insert(k string) {
-	index := hash(k)
+	index := t.hash(k)
 	b := t.array[index]
-	if b.search(k) != nil {
+	if _, exist := b.search(k); !exist {
 		b.insert(k)
 	}
 }
@@ -44,15 +44,18 @@ func (t *HashTable) Insert(k string) {
 // Delete
 
 func (t *HashTable) ToString() [][]string {
-	str := make([][]string, 0)
+	str := make([][]string, ArraySize)
 	for i, b := range t.array {
 		cur := b.head
 		j := 0
+		str[i] = make([]string, b.len)
 		for cur != nil {
 			str[i][j] = cur.key
+			cur = cur.next
 			j++
 		}
 	}
+	fmt.Print(str)
 	return str
 }
 
@@ -66,7 +69,7 @@ func (t *HashTable) ToString() [][]string {
 // 	return i % ArraySize, nil
 // }
 
-func hash(s string) int {
+func (t HashTable) hash(s string) int {
 	sum := 0
 	for _, v := range s {
 		sum += int(v)
@@ -93,19 +96,19 @@ func (b *bucket) insert(k string) {
 }
 
 // search
-func (b bucket) search(k string) *node {
+func (b bucket) search(k string) (*node, bool) {
 	if b.head == nil {
-		return nil
+		return nil, false
 	}
 
 	current := b.head
 	for current != nil {
 		if current.key == k {
-			return current
+			return current, true
 		}
 		current = current.next
 	}
-	return nil
+	return nil, false
 }
 
 // delete

@@ -1,6 +1,7 @@
 package hashtable
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -120,14 +121,34 @@ var testPriSearch = []testTable{
 func TestPriSearch(t *testing.T) {
 	for _, tt := range testPriSearch {
 		b := tt.bucket
-		n := b.search(tt.in)
-		if n == nil {
+		n, exist := b.search(tt.in)
+		if !exist {
 			if tt.out != "" {
 				t.Errorf("%s: got %v, want %s", tt.name, n, tt.out)
 			}
-		} else if a := n.key; a != tt.out {
-			t.Errorf("%s: got %s, want %s", tt.name, a, tt.out)
 		}
+		if exist {
+			if a := n.key; a != tt.out {
+				t.Errorf("%s: got %s, want %s", tt.name, a, tt.out)
+			}
+		}
+	}
+}
+
+func TestInsert(t *testing.T) {
+	table := New()
+	table.Insert("abc")
+	table.Insert("b")
+	table.Insert("cccccc")
+	table.Insert("a")
+	table.Insert("aa")
+	table.Insert("d ")
+	table.Insert("d")
+	table.Insert("d")
+	table.Insert("eeeee")
+	e := "[[b abc] [eeeee] [d] [] [] [aa] [d  a cccccc]]"
+	if a := table.ToString(); fmt.Sprint(a) != e {
+		t.Errorf("Insert assertion err: got %s, want %s", a, e)
 	}
 }
 
