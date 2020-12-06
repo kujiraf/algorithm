@@ -1,4 +1,6 @@
-package stack
+package sq
+
+import "fmt"
 
 type stack struct {
 	data []interface{}
@@ -16,6 +18,7 @@ func (s *stack) pop() interface{} {
 
 	d := s.data[l-1]
 	s.data = s.data[:l-1]
+	fmt.Println("poped: ", s.data)
 	return d
 }
 
