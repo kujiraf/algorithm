@@ -1,5 +1,9 @@
 package tree
 
+import "fmt"
+
+var isDebug bool
+
 type bst struct {
 	L    *bst
 	R    *bst
@@ -63,7 +67,8 @@ func (b *bst) insertV2(d int) {
 }
 
 func (b *bst) inorder() []int {
-	if b.data == nil {
+	if b == nil || b.data == nil {
+		b.debugf("(inorder) no data\n")
 		return nil
 	}
 
@@ -110,29 +115,58 @@ func (b *bst) search(d int) bool {
 	return srch(b, d)
 }
 
-// func (b *bst) remove(d int) {
-// 	if b.data == nil {
-// 		return
-// 	}
+func (b *bst) remove(d int) {
+	if b.data == nil {
+		return
+	}
 
-// 	var srch func(node *bst, d int) *bst
-// 	srch = func(node *bst, d int) *bst {
+	var rm func(tgt *bst, d int) *bst
+	rm = func(tgt *bst, d int) *bst {
 
-// 		if node == nil {
-// 			return node
-// 		}
+		if tgt == nil {
+			return tgt
+		}
+		if tgt.data.(int) > d {
+			return rm(tgt.L, d)
+		}
+		if tgt.data.(int) < d {
+			return rm(tgt.R, d)
+		}
 
-// 		if node.data.(int) > d {
-// 			return srch(node.L, d)
-// 		}
+		// tgt.Rがnilの場合、tgt.Lをそのまま持ってくる
+		if tgt.R == nil {
+			fmt.Println(tgt.inorder(), tgt.L.inorder())
+			return tgt.L
+		}
 
-// 		if node.data.(int) < d {
-// 			return srch(node.R, d)
-// 		}
+		// tgtのL,Rを一時保存しておく
+		b.debugf("tgt :%d\n", tgt.inorder())
+		tgtL := tgt.L
+		b.debugf("tgtL:%d\n", tgtL.inorder())
+		tgtR := tgt.R
+		b.debugf("tgtR:%d\n", tgtR.inorder())
+		// tgt.Rをtgtにシフトする
+		tgt = tgtR
+		// tgt.R.Lは、tgt.L.R.R.R...の終点にぶら下げる(tgt.R.L>tgt.R....が確定しているため)
+		tgt.L = tgtL
+		b.debugf("tgt :%d\n", tgt.inorder())
+		if tgtR != nil && tgtR.L == nil {
+			return tgt
+		}
 
-// 		if node.R != nil {
-// 			tmp := node
-// 			node = node.R
-// 		}
-// 	}
-// }
+		right := tgtL.R
+		for right != nil {
+			right = right.R
+		}
+		right = tgtR.L
+		return tgt
+	}
+
+	*b = *rm(b, d)
+}
+
+func (b *bst) debugf(format string, a ...interface{}) {
+	if isDebug {
+		fmt.Print("[DEBUG] ", fmt.Sprintf(format, a...))
+	}
+}

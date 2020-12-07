@@ -102,3 +102,48 @@ func TestSearch(t *testing.T) {
 	b = &bst{}
 	b.search(5)
 }
+
+func TestRemove(t *testing.T) {
+
+	b := setupBst()
+	var is func(exp ...int)
+	is = func(exp ...int) {
+		act := fmt.Sprint(b.inorder())
+		e := fmt.Sprint(exp)
+		if act != e {
+			t.Errorf("remove assersion err: got %s, want %s", act, e)
+		}
+	}
+
+	b = &bst{}
+	isDebug = true
+	b.insert(5)
+	b.insert(4)
+	b.insert(6)
+	is(4, 5, 6)
+
+	// b.remove(5)
+	// is(4, 6)
+
+	b.remove(4)
+	is(5, 6)
+
+	// ---------------------------------
+	// is(3, 4, 5, 7, 8, 56, 78)
+
+	// b.remove(4)
+	// is(3, 5, 7, 8, 56, 78)
+
+	// b.remove(7)
+	// b.remove(8)
+	// is(4, 5, 56, 78)
+
+	// b.remove(78)
+	// b.remove(0)
+	// is(4, 5, 56)
+
+	// b.remove(4)
+	// b.remove(5)
+	// b.remove(56)
+	// is()
+}
