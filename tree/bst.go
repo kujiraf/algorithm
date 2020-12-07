@@ -88,3 +88,29 @@ func (b *bst) inorder() []int {
 	appendInt(b)
 	return ctx
 }
+
+func (b *bst) search(d int) bool {
+	if b.data == nil {
+		return false
+	}
+
+	var srch func(node *bst, d int) bool
+	srch = func(node *bst, d int) bool {
+
+		if node == nil {
+			return false
+		}
+
+		if node.data.(int) > d {
+			return srch(node.L, d)
+		}
+
+		if node.data.(int) < d {
+			return srch(node.R, d)
+		}
+
+		return true
+	}
+
+	return srch(b, d)
+}

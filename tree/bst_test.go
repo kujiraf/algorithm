@@ -75,7 +75,7 @@ func TestInsertV2(t *testing.T) {
 	b.insertV2(8)
 }
 
-func TestInorder(t *testing.T) {
+func setupBst() *bst {
 	b := bst{}
 	b.insertV2(5)
 	b.insertV2(4)
@@ -87,8 +87,32 @@ func TestInorder(t *testing.T) {
 	b.insertV2(56)
 	b.insertV2(4)
 	b.insertV2(8)
+	return &b
+}
+
+func TestInorder(t *testing.T) {
+	b := setupBst()
 	exp := "[3 4 5 7 8 56 78]"
 	if act := fmt.Sprint(b.inorder()); act != exp {
 		t.Errorf("inorder assersion err: got %s, want %s", act, exp)
 	}
+}
+
+func TestSearch(t *testing.T) {
+	var isTrue func(b *bst, d ...int)
+	isTrue = func(b *bst, d ...int) {
+		for _, v := range d {
+			if !b.search(v) {
+				t.Error("assertion error : ", v)
+			}
+		}
+	}
+
+	b := setupBst()
+	isTrue(b, 5, 4, 3, 7, 8, 78, 56)
+	if b.search(100) {
+		t.Error("assertion error : ", 100)
+	}
+	b = &bst{}
+	b.search(5)
 }
