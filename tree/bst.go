@@ -1,7 +1,6 @@
 package tree
 
 type bst struct {
-	root *bst
 	L    *bst
 	R    *bst
 	data interface{}
@@ -18,14 +17,12 @@ func (b *bst) insert(d int) {
 		if current.data.(int) > d {
 			if current.L == nil {
 				current.L = &bst{data: d}
-				current.L.root = current
 				return
 			}
 			current = current.L
 		} else if current.data.(int) < d {
 			if current.R == nil {
 				current.R = &bst{data: d}
-				current.R.root = current
 				return
 			}
 			current = current.R
@@ -51,13 +48,11 @@ func (b *bst) insertV2(d int) {
 
 		if b.data.(int) > d {
 			b.L = ins(b.L, d)
-			b.L.root = b
 			return b
 		}
 
 		if b.data.(int) < d {
 			b.R = ins(b.R, d)
-			b.R.root = b
 			return b
 		}
 
@@ -114,3 +109,30 @@ func (b *bst) search(d int) bool {
 
 	return srch(b, d)
 }
+
+// func (b *bst) remove(d int) {
+// 	if b.data == nil {
+// 		return
+// 	}
+
+// 	var srch func(node *bst, d int) *bst
+// 	srch = func(node *bst, d int) *bst {
+
+// 		if node == nil {
+// 			return node
+// 		}
+
+// 		if node.data.(int) > d {
+// 			return srch(node.L, d)
+// 		}
+
+// 		if node.data.(int) < d {
+// 			return srch(node.R, d)
+// 		}
+
+// 		if node.R != nil {
+// 			tmp := node
+// 			node = node.R
+// 		}
+// 	}
+// }
