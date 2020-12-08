@@ -12,8 +12,7 @@ func TestInsert(t *testing.T) {
 		}
 	}
 
-	b := bst{}
-	b.insert(5)
+	b := &bst{data: 5}
 	ifErr("root", b.data, 5)
 	b.insert(4)
 	ifErr("root.left", b.L.data, 4)
@@ -36,12 +35,15 @@ func TestInsert(t *testing.T) {
 func TestInsertV2(t *testing.T) {
 	ifErr := func(tcase string, actual interface{}, expected int) {
 		if actual != expected {
-			t.Errorf("%s: got %d, want %d", tcase, actual.(int), expected)
+			if actual == nil {
+				t.Errorf("%s: got nil, want %d", tcase, expected)
+			} else {
+				t.Errorf("%s: got %d, want %d", tcase, actual.(int), expected)
+			}
 		}
 	}
 
-	b := bst{}
-	b.insertV2(5)
+	b := &bst{data: 5}
 	ifErr("root", b.data, 5)
 	b.insertV2(4)
 	ifErr("root.left", b.L.data, 4)
@@ -62,8 +64,7 @@ func TestInsertV2(t *testing.T) {
 }
 
 func setupBst() *bst {
-	b := bst{}
-	b.insertV2(5)
+	b := &bst{data: 5}
 	b.insertV2(4)
 	b.insertV2(3)
 	b.insertV2(7)
@@ -73,7 +74,7 @@ func setupBst() *bst {
 	b.insertV2(56)
 	b.insertV2(4)
 	b.insertV2(8)
-	return &b
+	return b
 }
 
 func TestInorder(t *testing.T) {
@@ -99,8 +100,6 @@ func TestSearch(t *testing.T) {
 	if b.search(100) {
 		t.Error("assertion error : ", 100)
 	}
-	b = &bst{}
-	b.search(5)
 }
 
 func TestRemove(t *testing.T) {
@@ -115,18 +114,22 @@ func TestRemove(t *testing.T) {
 		}
 	}
 
-	b = &bst{}
+	b = &bst{data: 1}
 	isDebug = true
+	b.insert(1)
+	b.remove(1)
+	is()
+
 	b.insert(5)
 	b.insert(4)
 	b.insert(6)
 	is(4, 5, 6)
 
-	// b.remove(5)
-	// is(4, 6)
+	b.remove(5)
+	is(4, 6)
 
 	b.remove(4)
-	is(5, 6)
+	is(6)
 
 	// ---------------------------------
 	// is(3, 4, 5, 7, 8, 56, 78)
