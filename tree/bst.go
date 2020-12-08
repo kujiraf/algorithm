@@ -97,6 +97,46 @@ func (b *bst) remove(d int) {
 		return
 	}
 
+	if b.data == d {
+
+	}
+	if b.data.(int) > d {
+		rm(b, b.L, d)
+	}
+	if b.data.(int) < d {
+		rm(b, b.R, d)
+	}
+}
+
+func rm(root *bst, node *bst, d int) {
+	if node == nil {
+		return
+	}
+
+	if node.data.(int) > d {
+		rm(node, node.L, d)
+	}
+	if node.data.(int) < d {
+		rm(node, node.R, d)
+	}
+
+	// 削除対象のノードに、node.R.L.L.L...で右ノードの最小値を設定する
+	tmp := mini(node.R, d)
+	// 探し出した最小値をノードに設定する
+	node.data = tmp.data
+	// 持ってきたデータは削除対象なので、削除する
+	rm(node, node.R, tmp.data.(int))
+}
+
+func mini(node *bst, d int) *bst {
+	if node.L == nil {
+		return node
+	}
+
+	for node.L != nil {
+		node = node.L
+	}
+	return node.L
 }
 
 func (b *bst) debugf(format string, a ...interface{}) {
