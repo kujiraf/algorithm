@@ -1,14 +1,17 @@
 package heap
 
+// MinHeap is heap which top node has minimum key
 type MinHeap struct {
 	array []int
 }
 
+// Insert inserts new value
 func (h *MinHeap) Insert(key int) {
 	h.array = append(h.array, key)
 	h.minHeapifyUp(len(h.array) - 1)
 }
 
+// Extract extracts the node top of tree
 func (h *MinHeap) Extract() (extracted int) {
 	extracted = h.array[0]
 
